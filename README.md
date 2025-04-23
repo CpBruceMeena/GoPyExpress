@@ -1,17 +1,16 @@
 # Golang-Python Fast Communication
 
-This project demonstrates efficient communication between a Golang API and a Python service using shared memory for data exchange.
+This project demonstrates efficient communication between a Golang API and a Python service using shared memory for data exchange, with a focus on performance comparison between REST API and shared memory approaches.
 
 ## Project Structure
 
 ```
 .
 ├── golang-api/           # Golang API service
-│   └── cmd/
-│       └── api/
-│           └── main.go   # Golang API implementation
-└── python-shared-memory/ # Python service
-    └── main.py          # Python implementation
+│   └── main.go          # Golang API implementation
+├── python-api/           # Python service
+│   └── main.py          # Python implementation
+└── shared_memory_dir/    # Directory for shared memory files
 ```
 
 ## Features
@@ -22,6 +21,7 @@ This project demonstrates efficient communication between a Golang API and a Pyt
 - Efficient data transfer using memory-mapped files
 - Automatic cleanup of shared memory resources
 - Detailed logging for debugging and performance monitoring
+- Performance comparison between communication methods
 
 ## Prerequisites
 
@@ -33,14 +33,14 @@ This project demonstrates efficient communication between a Golang API and a Pyt
 
 1. Start the Python service:
 ```bash
-cd python-shared-memory
+cd python-api
 python main.py
 ```
 
 2. Start the Golang API:
 ```bash
 cd golang-api
-go run cmd/api/main.go
+go run main.go
 ```
 
 ## API Endpoints
@@ -67,17 +67,65 @@ curl http://localhost:8080/api/users-via-api
 curl http://localhost:8080/api/users-via-shm
 ```
 
-## Performance Considerations
+## Performance Analysis
 
-- The shared memory approach involves:
-  1. HTTP request to trigger data write
-  2. File I/O operations for shared memory
-  3. Data cleanup after reading
+### Communication Methods Comparison
+
+1. **REST API Approach** (`/api/users-via-api`):
+   - Data flow:
+     1. Python serialization to JSON
+     2. Network transfer over HTTP
+     3. Go deserialization from JSON
+   - Best for: Small payloads (few KB)
+   - Advantages:
+     - Simple to implement
+     - Standard HTTP protocol
+     - Good for small data transfers
+     - Built-in error handling
+
+2. **Shared Memory Approach** (`/api/users-via-shm`):
+   - Data flow:
+     1. Python serialization to JSON
+     2. Direct memory write
+     3. Go deserialization from JSON
+   - Best for: Large payloads (MBs)
+   - Advantages:
+     - Faster for large data transfers
+     - No network serialization overhead
+     - Direct memory access
+     - Avoids HTTP protocol overhead
+
+### Performance Trade-offs
+
+- **Small Payload Size** (e.g., 2 users with basic info):
+  - REST API performs better because:
+    - Shared memory setup overhead is relatively high
+    - HTTP requests for small payloads are efficient
+    - Serialization/deserialization overhead is minimal
+    - Network latency is negligible
+
+- **Large Payload Size** (e.g., 100 users with detailed info):
+  - Shared Memory performs better because:
+    - Setup overhead becomes negligible
+    - No network serialization/deserialization
+    - Direct memory access is faster than network
+    - Avoids HTTP protocol overhead
+
+## Implementation Details
+
 - Current implementation uses temporary files for shared memory
-- Future optimizations could include:
-  - Unix domain sockets for signaling
-  - Persistent shared memory
-  - Memory-mapped files with proper synchronization
+- Shared memory size is configurable (default: 2MB)
+- Automatic cleanup of shared memory resources
+- Comprehensive error handling and logging
+
+## Future Optimizations
+
+- Unix domain sockets for signaling
+- Persistent shared memory
+- Memory-mapped files with proper synchronization
+- Compression for large payloads
+- Connection pooling for REST API
+- Caching mechanisms
 
 ## Error Handling
 

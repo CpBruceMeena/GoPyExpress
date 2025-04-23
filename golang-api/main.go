@@ -15,7 +15,7 @@ import (
 const (
 	SHM_DIR  = "shared_memory"
 	SHM_NAME = "users_shm"
-	SHM_SIZE = 1024
+	SHM_SIZE = 2 * 1024 * 1024 // Increased to 2MB to accommodate larger payload
 )
 
 type User struct {
