@@ -10,6 +10,10 @@ This project demonstrates efficient communication between a Golang API and a Pyt
 │   └── main.go          # Golang API implementation
 ├── python-api/           # Python service
 │   └── main.py          # Python implementation
+├── load-testing/         # Load testing setup using Locust
+│   ├── locustfile.py    # Load test configuration
+│   ├── requirements.txt # Python dependencies
+│   └── README.md        # Load testing documentation
 └── shared_memory_dir/    # Directory for shared memory files
 ```
 
@@ -136,4 +140,28 @@ curl http://localhost:8080/api/users-via-shm
 
 ## Contributing
 
-Feel free to submit issues and enhancement requests. 
+Feel free to submit issues and enhancement requests.
+
+## Load Testing
+
+The project includes a comprehensive load testing setup using Locust to compare the performance of both communication methods. See the [load-testing documentation](load-testing/README.md) for details on:
+
+- Setting up and running load tests
+- Test scenarios and metrics
+- Best practices for performance testing
+- Customizing test parameters
+
+To run the load tests:
+
+1. Install Locust dependencies:
+```bash
+cd load-testing
+pip install -r requirements.txt
+```
+
+2. Start the load test:
+```bash
+locust -f locustfile.py
+```
+
+3. Access the Locust web interface at http://localhost:8089 
