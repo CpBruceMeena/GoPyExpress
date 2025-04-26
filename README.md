@@ -73,74 +73,18 @@ curl http://localhost:8080/api/users-via-shm
 
 ## Performance Analysis
 
-### Communication Methods Comparison
+The project includes comprehensive load testing results comparing both communication methods. See [LOAD_TEST_RESULTS.md](LOAD_TEST_RESULTS.md) for detailed analysis of:
 
-1. **REST API Approach** (`/api/users-via-api`):
-   - Data flow:
-     1. Python serialization to JSON
-     2. Network transfer over HTTP
-     3. Go deserialization from JSON
-   - Best for: Small payloads (few KB)
-   - Advantages:
-     - Simple to implement
-     - Standard HTTP protocol
-     - Good for small data transfers
-     - Built-in error handling
+- Throughput comparison
+- Response time analysis
+- Error rates
+- Performance recommendations
+- Future optimization suggestions
 
-2. **Shared Memory Approach** (`/api/users-via-shm`):
-   - Data flow:
-     1. Python serialization to JSON
-     2. Direct memory write
-     3. Go deserialization from JSON
-   - Best for: Large payloads (MBs)
-   - Advantages:
-     - Faster for large data transfers
-     - No network serialization overhead
-     - Direct memory access
-     - Avoids HTTP protocol overhead
-
-### Performance Trade-offs
-
-- **Small Payload Size** (e.g., 2 users with basic info):
-  - REST API performs better because:
-    - Shared memory setup overhead is relatively high
-    - HTTP requests for small payloads are efficient
-    - Serialization/deserialization overhead is minimal
-    - Network latency is negligible
-
-- **Large Payload Size** (e.g., 100 users with detailed info):
-  - Shared Memory performs better because:
-    - Setup overhead becomes negligible
-    - No network serialization/deserialization
-    - Direct memory access is faster than network
-    - Avoids HTTP protocol overhead
-
-## Implementation Details
-
-- Current implementation uses temporary files for shared memory
-- Shared memory size is configurable (default: 2MB)
-- Automatic cleanup of shared memory resources
-- Comprehensive error handling and logging
-
-## Future Optimizations
-
-- Unix domain sockets for signaling
-- Persistent shared memory
-- Memory-mapped files with proper synchronization
-- Compression for large payloads
-- Connection pooling for REST API
-- Caching mechanisms
-
-## Error Handling
-
-- Both services include comprehensive error handling
-- Logs are provided for debugging
-- Shared memory files are automatically cleaned up
-- HTTP errors are properly propagated
-
-## Contributing
-
-Feel free to submit issues and enhancement requests.
+Key findings:
+- REST API shows better reliability (0.34% error rate)
+- Shared Memory shows potential for larger payloads
+- System handles ~25 requests/second with <20ms response time for 90% of requests
 
 ## Load Testing
 
@@ -164,4 +108,15 @@ pip install -r requirements.txt
 locust -f locustfile.py
 ```
 
-3. Access the Locust web interface at http://localhost:8089 
+3. Access the Locust web interface at http://localhost:8089
+
+## Error Handling
+
+- Both services include comprehensive error handling
+- Logs are provided for debugging
+- Shared memory files are automatically cleaned up
+- HTTP errors are properly propagated
+
+## Contributing
+
+Feel free to submit issues and enhancement requests. 
